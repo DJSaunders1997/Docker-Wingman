@@ -38,7 +38,7 @@ function buildDockerfile() {
     vscode.window
       .showInputBox({
         prompt: "Enter image name:",
-        value: repoName, // Set default value to repo name
+        value: `${repoName.toLowerCase()}-image`, // Default to repoName-image
       })
       .then((imageName) => {
         // Convert imageName to lowercase
@@ -68,17 +68,33 @@ function runDockerfile() {
     // Extract the repository name from the Dockerfile path
     const repoName = path.basename(path.dirname(dockerfilePath));
 
-    // Prompt user for container name with default value as repo name
+    // First prompt for image name
     vscode.window
       .showInputBox({
-        prompt: "Enter container name:",
-        value: repoName, // Set default value to repo name
+        prompt: "Enter image name:",
+        value: `${repoName.toLowerCase()}-image`, // Default to repoName-image
       })
-      .then((containerName) => {
-          runContainerFromImage("my-image", containerName.toLowerCase());
+      .then((imageName) => {
+        // If image name is provided, prompt for container name
+        if (imageName) {
+          return vscode.window
+            .showInputBox({
+              prompt: "Enter container name:",
+              value: `${repoName.toLowerCase()}-container`, // Default to repoName-container
+            })
+            .then((containerName) => ({ imageName, containerName }));
+        }
+      })
+      .then((names) => {
+        // If both names were provided, proceed to run container
+        if (names && names.containerName) {
+          runContainerFromImage(
+            names.imageName.toLowerCase(),
+            names.containerName.toLowerCase()
+          );
           activateEnvIcon.displayDefault();
         }
-      );
+      });
   } else {
     //TODO: Change else to early exit condition
     const activeFilename = vscode.window.activeTextEditor.document.fileName;

@@ -18,16 +18,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2 # Checks out the repository code.
-      - uses: actions/setup-node@v1 # Sets up Node.js environment.
+
+      - uses: actions/setup-node@v2 # Sets up Node.js environment.
         with:
-          node-version: 14
-          registry-url: https://registry.npmjs.org/
+          node-version: '16' # Node 16 for vsce compatibility
 
-      - name: Install the dependencies
-        run: npm i
+      - name: Install dependencies
+        run: npm install
 
-      - name: Install vsce # Installs the vsce tool globally. https://code.visualstudio.com/api/working-with-extensions/publishing-extension
-        run: npm i -g vsce
+      - name: Install vsce # Installs the vsce tool
+        run: npx vsce --version || npm install -g vsce # Installs the vsce tool globally. https://code.visualstudio.com/api/working-with-extensions/publishing-extension
 
-      - name: Publish
+      - name: Publish Extension to VS Code Marketplace
         run: vsce publish -p ${{ secrets.VSCE_PAT }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }} # Use the PAT stored in GitHub Secrets

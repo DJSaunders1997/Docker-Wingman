@@ -1,7 +1,7 @@
 {
-	"name": "conda-wingman",
-	"displayName": "Conda Wingman",
-	"description": "Help programmers use environments without memorising conda commands.",
+	"name": "docker-wingman",
+	"displayName": "Docker Wingman",
+	"description": "Help programmers use environments without memorising docker commands.",
 	"version": "1.0.0",
 	"publisher": "DJSaunders1997",
 	"engines": {
@@ -19,7 +19,7 @@
 		"theme": "dark"
 	},
 	"keywords": [
-		"Conda",
+		"Docker",
 		"Wingman",
 		"Environment",
 		"Environments",
@@ -27,30 +27,30 @@
 	],
 	"preview": false,
 	"activationEvents": [
-		"onLanguage:yaml",
-		"onCommand:conda-wingman.buildCondaYAML",
-		"onCommand:conda-wingman.activateCondaYAML",
-		"onCommand:conda-wingman.writeRequirementsFile",
-		"onCommand:conda-wingman.deleteCondaEnv"
+		"onLanguage:dockerfile",
+		"onCommand:docker-wingman.buildDockerfile",
+		"onCommand:docker-wingman.runDockerfile",
+		"onCommand:docker-wingman.writeRequirementsFile",
+		"onCommand:docker-wingman.deleteDockerEnv"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "conda-wingman.buildCondaYAML",
-				"title": "Conda Wingman: Build Conda Environment from YAML file"
+				"command": "docker-wingman.buildDockerfile",
+				"title": "Docker Wingman: Build Docker Environment from Dockerfile"
 			},
 			{
-				"command": "conda-wingman.activateCondaYAML",
-				"title": "Conda Wingman: Activate Conda Environment from YAML file"
+				"command": "docker-wingman.runDockerfile",
+				"title": "Docker Wingman: Activate Docker Environment from Dockerfile"
 			},
 			{
-				"command": "conda-wingman.writeRequirementsFile",
-				"title": "Conda Wingman: Write a requirements YAML file from the active Conda Environment"
+				"command": "docker-wingman.writeRequirementsFile",
+				"title": "Docker Wingman: Write a requirements Dockerfile from the active Docker Environment"
 			},
 			{
-				"command": "conda-wingman.deleteCondaEnv",
-				"title": "Conda Wingman: Delete Conda Environment"
+				"command": "docker-wingman.deleteDockerEnv",
+				"title": "Docker Wingman: Delete Docker Environment"
 			}
 		]
 	},
@@ -73,9 +73,9 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/DJSaunders1997/Conda-Wingman.git"
+		"url": "https://github.com/DJSaunders1997/docker-wingman.git"
 	},
-	"homepage": "https://github.com/DJSaunders1997/Conda-Wingman#readme",
+	"homepage": "https://github.com/DJSaunders1997/docker-wingman#readme",
 	"dependencies": {
 		"js-yaml": "^4.1.0"
 	}

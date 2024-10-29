@@ -1,5 +1,5 @@
 const vscode = require("vscode");
-const { activeFileIsYAML } = require("./utils");
+const { activeFileIsDockerfile } = require("./utils");
 
 /**
  * Class to extend the vscode createStatusBarItem with additional functionality.
@@ -25,7 +25,7 @@ class CustomStatusBarItem {
   displayDefault() {
     this.statusBar.text = this.defaultText;
 
-    if (activeFileIsYAML()) {
+    if (activeFileIsDockerfile()) {
       this.statusBar.show();
     } else {
       this.statusBar.hide();
@@ -46,25 +46,25 @@ class CustomStatusBarItem {
 // Export the object instances and not the class
 // Create custom status bar items
 var createEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(tools) Build Env from YAML"),
-  (tooltip = "Build conda environment from open YAML file"),
-  (command = "conda-wingman.buildCondaYAML")
+  (defaultText = "$(tools) Build Image from Dockerfile"),
+  (tooltip = "Build docker environment from open Dockerfile"),
+  (command = "docker-wingman.buildDockerfile")
 );
 var activateEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(symbol-event) Activate Env from YAML"),
-  (tooltip = "Activate conda environment referenced in open YAML file"),
-  (command = "conda-wingman.activateCondaYAML")
+  (defaultText = "$(symbol-event) Run Docker Image"),
+  (tooltip = "Activate docker environment referenced in open Dockerfile"),
+  (command = "docker-wingman.runDockerfile")
 );
 var writeEnvIcon = new CustomStatusBarItem(
   (defaultText = "$(book) Write Requirements File"),
-  (tooltip = "Write active conda environment to a YAML file"),
-  (command = "conda-wingman.writeRequirementsFile")
+  (tooltip = "Write active docker environment to a Dockerfile"),
+  (command = "docker-wingman.writeRequirementsFile")
 );
 //create custom status bar item to delete env
 var deleteEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(trashcan) Delete Env from YAML"),
-  (tooltip = "Delete conda environment referenced in open YAML file"),
-  (command = "conda-wingman.deleteCondaEnv")
+  (defaultText = "$(trashcan) Delete Env from Dockerfile"),
+  (tooltip = "Delete docker environment referenced in open Dockerfile"),
+  (command = "docker-wingman.deleteDockerEnv")
 );
 
 module.exports = { createEnvIcon, activateEnvIcon, writeEnvIcon, deleteEnvIcon };

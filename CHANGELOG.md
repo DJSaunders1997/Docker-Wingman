@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to the "Conda Wingman" extension will be documented in this file.
+All notable changes to the "Docker Wingman" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
@@ -20,7 +20,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.1.0] - 2022-03
 - Changing to [semantic versioning numbers](https://semver.org/).
-- Added functionality to create conda environment YAML files from the command pallet. Small update to logo.
+- Added functionality to create docker environment Dockerfiles from the command pallet. Small update to logo.
 
 ## [0.0.2] - 2022-03
 - Improving readme.

@@ -3,11 +3,12 @@ var path = require("path");
 
 const {
   sendCommandToTerminal,
-  activeFileIsYAML,
+  activeFileIsDockerfile,
   getOpenDocumentPath,
-  activateEnvFromYAML,
-  deleteEnvFromYAML,
-  createYAMLInputBox,
+  buildImageFromDockerfile,
+  runContainerFromImage,
+  stopAndRemoveContainer,
+  createDockerfileInputBox,
 } = require("./utils");
 const {
   createEnvIcon,
@@ -16,102 +17,124 @@ const {
   deleteEnvIcon,
 } = require("./statusBarItems"); // TODO: Make these arguments to the functions
 
-function buildCondaYAML() {
-  const filenameForwardSlash = getOpenDocumentPath();
+// TODO: Rename to build docker image
+function buildDockerfile() {
+  const dockerfilePath = getOpenDocumentPath();
 
-  if (activeFileIsYAML()) {
+  // if (activeFileIsDockerfile()) {
+  if (dockerfilePath.toLowerCase().includes("dockerfile")) {
     vscode.window.showInformationMessage(
-      `Creating Env from ${filenameForwardSlash}\n This may take up to a minute...`
+      `Building Docker image from ${dockerfilePath}\n This may take a few moments...`
     );
+    // console.log(activeFileIsDockerfile()
     console.log(
-      `Creating Env from ${filenameForwardSlash}\n This may take up to a minute...`
+      `Building Docker image from ${dockerfilePath}\n This may take a few moments...`
     );
 
-    const createEnvCommand = `conda env create -f "${filenameForwardSlash}"`;
-    sendCommandToTerminal(createEnvCommand);
+    // Extract the repository name from the Dockerfile path
+    const repoName = path.basename(path.dirname(dockerfilePath));
 
-    activateEnvFromYAML(filenameForwardSlash);
+    // Prompt user for container name with default value as repo name
+    vscode.window
+      .showInputBox({
+        prompt: "Enter image name:",
+        value: repoName, // Set default value to repo name
+      })
+      .then((imageName) => {
+        // Convert imageName to lowercase
+        buildImageFromDockerfile(dockerfilePath, imageName.toLowerCase());
+        activateEnvIcon.displayDefault();
+      });
   } else {
     const activeFilename = vscode.window.activeTextEditor.document.fileName;
     const fileExt = activeFilename.split(".").pop();
     vscode.window.showErrorMessage(
-      `Cannot build conda env from a ${fileExt} file. Only YAML files are supported.`
+      `Cannot build Docker image from a ${fileExt} file. Only Dockerfiles are supported.`
     );
   }
 }
 
-function activateCondaYAML() {
-  const filenameForwardSlash = getOpenDocumentPath();
+function runDockerfile() {
+  const dockerfilePath = getOpenDocumentPath();
 
-  var activeFilename = vscode.window.activeTextEditor.document.fileName;
+  if (dockerfilePath.toLowerCase().includes("dockerfile")) {
+    vscode.window.showInformationMessage(
+      `Running Docker container from image built by ${dockerfilePath}`
+    );
+    console.log(
+      `Running Docker container from image built by ${dockerfilePath}`
+    );
 
-  // Validate open file is YAML
-  if (activeFileIsYAML()) {
-    activateEnvFromYAML(filenameForwardSlash);
+    // Extract the repository name from the Dockerfile path
+    const repoName = path.basename(path.dirname(dockerfilePath));
 
-    //Remove loading icon from bar
-    activateEnvIcon.displayDefault();
+    // Prompt user for container name with default value as repo name
+    vscode.window
+      .showInputBox({
+        prompt: "Enter container name:",
+        value: repoName, // Set default value to repo name
+      })
+      .then((containerName) => {
+          runContainerFromImage("my-image", containerName.toLowerCase());
+          activateEnvIcon.displayDefault();
+        }
+      );
   } else {
-    // split string by . and return last array element to get extension
-    var fileExt = activeFilename.split(".").pop();
+    //TODO: Change else to early exit condition
+    const activeFilename = vscode.window.activeTextEditor.document.fileName;
+    const fileExt = activeFilename.split(".").pop();
     vscode.window.showErrorMessage(
-      `Cannot read conda env info from a ${fileExt} file. Only YAML files are supported.`
+      `Cannot run Docker container from a ${fileExt} file. Only Dockerfiles are supported.`
     );
   }
 }
 
-/**
- * Deletes a Conda environment.
- * @function deleteCondaEnv
- * @description This function deletes a Conda environment. It checks if the active file is a YAML file and deletes the environment from the YAML file. If the active file is not a YAML file, it displays an error message indicating that only YAML files are supported.
- */
-function deleteCondaEnv() {
-  const filenameForwardSlash = getOpenDocumentPath();
+//TODO:Implement delete and write functionality
+// These are dodgily defined, but arnt registered and dont work
 
-  var activeFilename = vscode.window.activeTextEditor.document.fileName;
+function deleteDockerContainer() {
+  const dockerfilePath = getOpenDocumentPath();
 
-  // Validate open file is YAML
-  if (activeFileIsYAML()) {
-    deleteEnvFromYAML(filenameForwardSlash);
+  // Extract the repository name from the Dockerfile path
+  const repoName = path.basename(path.dirname(dockerfilePath));
 
-    //Remove loading icon from bar
-    deleteEnvIcon.displayDefault();
-  } else {
-    // split string by . and return last array element to get extension
-    var fileExt = activeFilename.split(".").pop();
-    vscode.window.showErrorMessage(
-      `Cannot read conda env info from a ${fileExt} file. Only YAML files are supported.`
-    );
-  }
+  // Prompt user for container name with default value as repo name
+  vscode.window
+    .showInputBox({
+      prompt: "Enter container name to delete:",
+      value: repoName, // Set default value to repo name
+    })
+    .then((containerName) => {
+      if (containerName) {
+        stopAndRemoveContainer(containerName);
+        deleteEnvIcon.displayDefault();
+      }
+    });
 }
-
-// Command: "Conda Wingman: Create a YAML file from the active Conda Environment"
-// This command will create a requirements yaml to with a name input from the user.
-// TODO: Ask user for input and save as input.yaml.
-async function writeRequirementsFile() {
+// Command: "Docker Wingman: Create a Dockerfile"
+// This command will create a Dockerfile with a name input from the user.
+async function createDockerfile() {
   // Use current filename as default value if possible.
   var filepath = vscode.window.activeTextEditor.document.fileName;
   var filename = path.parse(filepath).base;
 
-  if (filepath == "undefined" || !activeFileIsYAML()) {
-    filename = "requirements.yml";
+  if (
+    filepath == "undefined" ||
+    !filename.toLowerCase().includes("dockerfile")
+  ) {
+    filename = "Dockerfile";
   }
 
-  // Get response from user as to what to call their env.
-  var response = createYAMLInputBox(filename);
+  // Get response from user as to what to call their Dockerfile.
+  var response = await createDockerfileInputBox(filename);
   console.log("Response: ", response);
-
-  console.log(
-    `While the writeRequirementsFileFunct has finished running.
-        The createYAMLInputBox function is still running in the background.`
-  );
 
   writeEnvIcon.displayDefault();
 }
 
 module.exports = {
-  buildCondaYAML,
-  activateCondaYAML,
-  writeRequirementsFile,
-  deleteCondaEnv,
+  buildDockerfile,
+  runDockerfile,
+  createDockerfile,
+  deleteDockerContainer,
 };

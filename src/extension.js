@@ -4,12 +4,12 @@ const vscode = require("vscode"); // The module 'vscode' contains the VS Code ex
 
 // Import my VSCode command functions, utility/helper functions, and custom status bar.
 const {
-  buildCondaYAML,
-  activateCondaYAML,
+  buildDockerfile,
+  runDockerfile,
   writeRequirementsFile,
-  deleteCondaEnv,
+  deleteDockerEnv,
 } = require("./commands");
-const { activeFileIsYAML } = require("./utils");
+const { activeFileIsDockerfile } = require("./utils");
 const {
   createEnvIcon,
   activateEnvIcon,
@@ -23,19 +23,21 @@ const {
  *
  */
 function activate(context) {
-  console.log('Congratulations, your extension "Conda Wingman" is now active!');
+  console.log('Congratulations, your extension "Docker Wingman" is now active!');
 
-  // Setup listener to see when active file is not YAML
+  // Setup listener to see when active file is not Dockerfile
   // TODO: Can I move this to a different file?
   var listener = function (event) {
     console.log("Active window changed", event);
 
     // Check whether to display the status bar items every time the active file changes.
-    // Logic to check if the active file is a YAML file is in the status bar item class.
+    // Logic to check if the active file is a Dockerfile is in the status bar item class.
     createEnvIcon.displayDefault();
     activateEnvIcon.displayDefault();
-    writeEnvIcon.displayDefault();
-    deleteEnvIcon.displayDefault();
+    
+    // TODO: Implement writeEnvIcon and deleteEnvIcon
+    // writeEnvIcon.displayDefault();
+    // deleteEnvIcon.displayDefault();
   };
 
   var fileChangeSubscription =
@@ -45,20 +47,21 @@ function activate(context) {
   // Register VSCODE commands as functions defined in other files.
   // TODO: Add icons to the function here as arguments somehow instead of using global variables?
   const buildCommand = vscode.commands.registerCommand(
-    "conda-wingman.buildCondaYAML",
-    buildCondaYAML
+    "docker-wingman.buildDockerfile",
+    buildDockerfile
   );
   const activateCommand = vscode.commands.registerCommand(
-    "conda-wingman.activateCondaYAML",
-    activateCondaYAML
+    "docker-wingman.runDockerfile",
+    runDockerfile
   );
+  // TODO: Implement writeRequirementsFile and deleteDockerEnv
   const writeCommand = vscode.commands.registerCommand(
-    "conda-wingman.writeRequirementsFile",
+    "docker-wingman.writeRequirementsFile",
     writeRequirementsFile
   );
   const deleteCommand = vscode.commands.registerCommand(
-    "conda-wingman.deleteCondaEnv",
-    deleteCondaEnv
+    "docker-wingman.deleteDockerEnv",
+    deleteDockerEnv
   );
 
   context.subscriptions.push(buildCommand, activateCommand, writeCommand, deleteCommand);

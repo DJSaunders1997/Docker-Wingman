@@ -1,5 +1,4 @@
 const vscode = require("vscode");
-const yaml = require("js-yaml"); // Required modules to read and parse yaml https://www.npmjs.com/package/js-yaml
 const fs = require("fs");
 
 // Terminal Functions copied from microsoft example terminal API
@@ -26,15 +25,16 @@ function sendCommandToTerminal(command) {
   console.log(`Command '${command}' sent to terminal`);
 }
 
-// Helper function to check if active file is a YAML file
-// Return true if active file is YAML
-function activeFileIsYAML() {
+// Helper function to check if active file is a Dockerfile
+// Return true if the active file is a Dockerfile
+function activeFileIsDockerfile() {
   var activeFilename = vscode.window.activeTextEditor.document.fileName;
 
-  // split string by . and return last array element to get extension
-  var fileExt = activeFilename.split(".").pop();
+  // split string by / or \ to get the file name (to handle cross-platform paths)
+  var fileName = activeFilename.split(/[/\\]/).pop();
 
-  if (fileExt.toLowerCase() == "yaml" || fileExt.toLowerCase() == "yml") {
+  // Check if the file name matches "Dockerfile" or starts with "Dockerfile."
+  if (fileName.toLowerCase() == "dockerfile" || fileName.toLowerCase().startsWith("dockerfile.")) {
     return true;
   } else {
     return false;
@@ -43,20 +43,20 @@ function activeFileIsYAML() {
 
 /**
  *
- * @param {string} filenameForwardSlash : filename or path to yaml environment file.
+ * @param {string} filenameForwardSlash : filename or path to Dockerfile environment file.
  *
- * Function will read the specified yaml file and pick out the "name" value.
+ * Function will read the specified Dockerfile file and pick out the "name" value.
  * @returns {string} The name of the environment.
  */
-function getEnvNameFromYAML(filenameForwardSlash) {
+function getEnvNameFromDockerfile(filenameForwardSlash) {
   try {
-    const yamlDoc = yaml.load(fs.readFileSync(filenameForwardSlash, "utf8"));
-    console.log(yamlDoc);
+    const DockerfileDoc = Dockerfile.load(fs.readFileSync(filenameForwardSlash, "utf8"));
+    console.log(DockerfileDoc);
 
-    var env_name = yamlDoc["name"];
+    var env_name = DockerfileDoc["name"];
     return env_name;
   } catch (e) {
-    console.error("Error parsing the yaml", e);
+    console.error("Error parsing the Dockerfile", e);
     return null;
   }
 }
@@ -84,54 +84,54 @@ function getOpenDocumentPath() {
 
 /**
  *
- * @param {string} filenameForwardSlash : filename or path to yaml environment file.
+ * @param {string} filenameForwardSlash : filename or path to Dockerfile environment file.
  *
- * Function will read the specified yaml file and pick out the "name" value.
+ * Function will read the specified Dockerfile file and pick out the "name" value.
  * Then attempts to activate this environment with the terminal.
  */
-function activateEnvFromYAML(filenameForwardSlash) {
+function activateEnvFromDockerfile(filenameForwardSlash) {
   // Send to terminal the command to activate the environment too
   try {
-    var env_name = getEnvNameFromYAML(filenameForwardSlash);
+    var env_name = getEnvNameFromDockerfile(filenameForwardSlash);
 
     vscode.window.showInformationMessage(`Activating ${env_name} .`);
     console.log(`Activating ${env_name} .`);
 
-    // Run the conda create environment command
-    var command = `conda activate ${env_name}`;
+    // Run the docker create environment command
+    var command = `docker activate ${env_name}`;
     sendCommandToTerminal(command);
   } catch (e) {
-    vscode.window.showErrorMessage("Error parsing the yaml"); //TODO: Add better error handling to Release Logs
-    console.log("Error parsing the yaml");
+    vscode.window.showErrorMessage("Error parsing the Dockerfile"); //TODO: Add better error handling to Release Logs
+    console.log("Error parsing the Dockerfile");
     console.log(e);
   }
 }
 
 /**
  *
- * @param {string} filenameForwardSlash : filename or path to yaml environment file.
+ * @param {string} filenameForwardSlash : filename or path to Dockerfile environment file.
  *
- * Function will read the specified yaml file and pick out the "name" value.
+ * Function will read the specified Dockerfile file and pick out the "name" value.
  * Then attempts to delete this environment with the terminal.
  */
-function deleteEnvFromYAML(filenameForwardSlash) {
+function deleteEnvFromDockerfile(filenameForwardSlash) {
   try {
-    var env_name = getEnvNameFromYAML(filenameForwardSlash);
+    var env_name = getEnvNameFromDockerfile(filenameForwardSlash);
 
     vscode.window.showInformationMessage(`Deleting ${env_name} .`);
     console.log(`Deleting ${env_name} .`);
 
     // Env to be deleted can't be active when deleting
     // therefore deactivate any env first.
-    var deactivateCommand = 'conda deactivate';
+    var deactivateCommand = 'docker deactivate';
     sendCommandToTerminal(deactivateCommand);
 
-    // Run the conda delete environment command
-    var command = `conda env remove --name ${env_name}`;
+    // Run the docker delete environment command
+    var command = `docker env remove --name ${env_name}`;
     sendCommandToTerminal(command);
   } catch (e) {
-    vscode.window.showErrorMessage("Error parsing the yaml");
-    console.log("Error parsing the yaml");
+    vscode.window.showErrorMessage("Error parsing the Dockerfile");
+    console.log("Error parsing the Dockerfile");
     console.log(e);
   }
 }
@@ -141,22 +141,22 @@ function deleteEnvFromYAML(filenameForwardSlash) {
  * Higher level wrapper around vscode.window.showInputBox
  * Source: https://stackoverflow.com/questions/55854519/how-to-ask-user-for-username-or-other-data-with-vs-code-extension-api
  */
-async function createYAMLInputBox(defaultValue) {
+async function createDockerfileInputBox(defaultValue) {
   const result = await vscode.window.showInputBox({
     value: defaultValue,
-    placeHolder: "Name of created conda environment YAML",
+    placeHolder: "Name of created docker environment Dockerfile",
     validateInput: (text) => {
       if (text.length == 0) {
         return "You cannot leave this empty!";
       }
       var fileExt = text.split(".").pop().toLowerCase();
 
-      if (fileExt != "yaml" && fileExt != "yml") {
-        return `Only YAML files are supported!`;
+      if (fileExt != "Dockerfile" && fileExt != "yml") {
+        return `Only Dockerfiles are supported!`;
       }
     },
   });
-  console.log("Running asynchronous createYAMLInputBox function ");
+  console.log("Running asynchronous createDockerfileInputBox function ");
 
   console.log(`Got: ${result}`);
   if (result == undefined) {
@@ -169,17 +169,97 @@ async function createYAMLInputBox(defaultValue) {
     );
     console.log(`Creating requirements file Env:\n'${result}' .`);
 
-    // Run the conda create environment command
-    var command = `conda env export > "${result}"`;
+    // Run the docker create environment command
+    var command = `docker env export > "${result}"`;
     sendCommandToTerminal(command);
+  }
+}
+
+function buildImageFromDockerfile(dockerfilePath, imageName) {
+  try {
+    vscode.window.showInformationMessage(`Building Docker image from Dockerfile: ${dockerfilePath}.`);
+    console.log(`Building Docker image from Dockerfile: ${dockerfilePath}.`);
+
+    // Run the docker build command
+    var command = `docker build -t ${imageName} -f ${dockerfilePath} .`;
+    sendCommandToTerminal(command);
+  } catch (e) {
+    vscode.window.showErrorMessage("Error building the Docker image");
+    console.log("Error building the Docker image");
+    console.log(e);
+  }
+}
+
+function runContainerFromImage(imageName, containerName) {
+  try {
+    vscode.window.showInformationMessage(`Running Docker container: ${containerName} from image: ${imageName}.`);
+    console.log(`Running Docker container: ${containerName} from image: ${imageName}.`);
+
+    // Run the docker run command
+    var command = `docker run --name ${containerName} ${imageName}`;
+    sendCommandToTerminal(command);
+  } catch (e) {
+    vscode.window.showErrorMessage("Error running the Docker container");
+    console.log("Error running the Docker container");
+    console.log(e);
+  }
+}
+
+function stopAndRemoveContainer(containerName) {
+  try {
+    vscode.window.showInformationMessage(`Stopping and removing Docker container: ${containerName}.`);
+    console.log(`Stopping and removing Docker container: ${containerName}.`);
+
+    // Stop the container if it's running
+    var stopCommand = `docker stop ${containerName}`;
+    sendCommandToTerminal(stopCommand);
+
+    // Run the docker rm command to remove the container
+    var removeCommand = `docker rm ${containerName}`;
+    sendCommandToTerminal(removeCommand);
+  } catch (e) {
+    vscode.window.showErrorMessage("Error stopping or removing the Docker container");
+    console.log("Error stopping or removing the Docker container");
+    console.log(e);
+  }
+}
+
+async function createDockerfileInputBox(defaultValue) {
+  const result = await vscode.window.showInputBox({
+    value: defaultValue,
+    placeHolder: "Name of the Dockerfile",
+    validateInput: (text) => {
+      if (text.length == 0) {
+        return "You cannot leave this empty!";
+      }
+      if (!text.toLowerCase().startsWith("dockerfile")) {
+        return `The file must be a Dockerfile!`;
+      }
+    },
+  });
+  console.log("Running asynchronous createDockerfileInputBox function ");
+
+  console.log(`Got: ${result}`);
+  if (result == undefined) {
+    vscode.window.showErrorMessage(
+      `Cannot proceed without a Dockerfile name.`
+    );
+  } else {
+    vscode.window.showInformationMessage(
+      `Using Dockerfile:\n'${result}' .`
+    );
+    console.log(`Using Dockerfile:\n'${result}' .`);
   }
 }
 
 module.exports = {
   sendCommandToTerminal,
-  activeFileIsYAML,
+  activeFileIsDockerfile,
+  runContainerFromImage,
+  stopAndRemoveContainer,
+  buildImageFromDockerfile,
   getOpenDocumentPath,
-  activateEnvFromYAML,
-  createYAMLInputBox,
-  deleteEnvFromYAML
+  activateEnvFromDockerfile,
+  createDockerfileInputBox,
+  deleteEnvFromDockerfile
 };

@@ -1,10 +1,10 @@
 const assert = require('assert');
 const vscode = require('vscode');
 const sinon = require('sinon');
-const { buildCondaYAML } = require('../../src/commands');
+const { buildDockerfile } = require('../../src/commands');
 const { sendCommandToTerminal } = require('../../src/utils');
 
-suite('Build Conda YAML Tests', () => {
+suite('Build Docker YAML Tests', () => {
     let sandbox;
 
     // Setup a sandbox for sinon before each test to manage stubs/spies
@@ -19,9 +19,9 @@ suite('Build Conda YAML Tests', () => {
         sandbox.restore();
     });
 
-    test('Build Conda Environment Command with YAML file', async () => {
-        // Stub the activeTextEditor to simulate a YAML file being open
-        // Stubbing vscode.window.activeTextEditor: This is crucial for simulating the environment where a YAML file is supposedly open in the editor,
+    test('Build Docker Environment Command with Dockerfile', async () => {
+        // Stub the activeTextEditor to simulate a Dockerfile being open
+        // Stubbing vscode.window.activeTextEditor: This is crucial for simulating the environment where a Dockerfile is supposedly open in the editor,
         // which is a dependency for the command to execute correctly.
         const fakeEditor = {
             document: {
@@ -35,13 +35,13 @@ suite('Build Conda YAML Tests', () => {
         // which is important for not altering your local development environment during testing.
         const terminalStub = sandbox.stub(sendCommandToTerminal, 'sendCommandToTerminal');
 
-        // Execute the command to test if it correctly handles a YAML file
-        await vscode.commands.executeCommand('conda-wingman.buildCondaYAML');
+        // Execute the command to test if it correctly handles a Dockerfile
+        await vscode.commands.executeCommand('docker-wingman.buildDockerfile');
 
-        // Assert that the terminal command was called with the correct command to create a Conda environment
+        // Assert that the terminal command was called with the correct command to create a Docker environment
         // Assertions: These check that the expected terminal command is formed and that the appropriate user feedback is provided,
         // validating the functionality of the command under test conditions.
-        assert.ok(terminalStub.calledWith(`conda env create -f "${fakeEditor.document.fileName}"`));
+        assert.ok(terminalStub.calledWith(`docker env create -f "${fakeEditor.document.fileName}"`));
 
         // Optionally, check for any UI feedback that should have been triggered
         const spyInfo = sandbox.spy(vscode.window, 'showInformationMessage');

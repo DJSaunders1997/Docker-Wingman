@@ -7,9 +7,9 @@
 
 ![Banner](images/Logo-Banner.png)
 
-[![Version](https://vsmarketplacebadges.dev/version-short/djsaunders1997.docker-wingman.png?style=for-the-badge&colorA=252525&colorB=#42AF29)](https://marketplace.visualstudio.com/items?itemName=djsaunders1997.docker-wingman)
-[![Downloads](https://vsmarketplacebadges.dev/downloads-short/djsaunders1997.docker-wingman.png?style=for-the-badge&colorA=252525&colorB=#42AF29)](https://marketplace.visualstudio.com/items?itemName=djsaunders1997.docker-wingman)
-[![Ratings](https://vsmarketplacebadges.dev/rating-short/djsaunders1997.docker-wingman.png?style=for-the-badge&colorA=252525&colorB=#42AF29)](https://marketplace.visualstudio.com/items?itemName=djsaunders1997.docker-wingman)
+[![Version](https://vsmarketplacebadges.dev/version-short/djsaunders1997.docker-wingman.png?style=for-the-badge&colorA=252525&colorB=#0db7ed)](https://marketplace.visualstudio.com/items?itemName=djsaunders1997.docker-wingman)
+[![Downloads](https://vsmarketplacebadges.dev/downloads-short/djsaunders1997.docker-wingman.png?style=for-the-badge&colorA=252525&colorB=#0db7ed)](https://marketplace.visualstudio.com/items?itemName=djsaunders1997.docker-wingman)
+[![Ratings](https://vsmarketplacebadges.dev/rating-short/djsaunders1997.docker-wingman.png?style=for-the-badge&colorA=252525&colorB=#0db7ed)](https://marketplace.visualstudio.com/items?itemName=djsaunders1997.docker-wingman)
 
 
 This is the README for the extension [Docker Wingman](https://marketplace.visualstudio.com/items?itemName=DJSaunders1997.docker-wingman).

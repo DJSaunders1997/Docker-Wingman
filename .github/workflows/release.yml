@@ -17,19 +17,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2 # Checks out the repository code.
+      - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2 # Sets up Node.js environment.
+      - uses: actions/setup-node@v2
         with:
-          node-version: '16' # Node 16 for vsce compatibility
+          node-version: '18' # Use Node.js 18 for Web Streams API support
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install vsce # Installs the vsce tool
-        run: npx vsce --version || npm install -g vsce # Installs the vsce tool globally. https://code.visualstudio.com/api/working-with-extensions/publishing-extension
-
       - name: Publish Extension to VS Code Marketplace
-        run: vsce publish -p ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
         env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }} # Use the PAT stored in GitHub Secrets
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

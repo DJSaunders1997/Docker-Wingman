@@ -6,7 +6,6 @@ const vscode = require("vscode"); // The module 'vscode' contains the VS Code ex
 const {
   buildDockerfile,
   runDockerfile,
-  writeRequirementsFile,
   deleteDockerEnv,
 } = require("./commands");
 const { activeFileIsDockerfile } = require("./utils");
@@ -54,11 +53,7 @@ function activate(context) {
     "docker-wingman.runDockerfile",
     runDockerfile
   );
-  // TODO: Implement writeRequirementsFile and deleteDockerEnv
-  const writeCommand = vscode.commands.registerCommand(
-    "docker-wingman.writeRequirementsFile",
-    writeRequirementsFile
-  );
+  // TODO: Implement deleteDockerEnv
   const deleteCommand = vscode.commands.registerCommand(
     "docker-wingman.deleteDockerEnv",
     deleteDockerEnv

@@ -30,7 +30,6 @@
 		"onLanguage:dockerfile",
 		"onCommand:docker-wingman.buildDockerfile",
 		"onCommand:docker-wingman.runDockerfile",
-		"onCommand:docker-wingman.writeRequirementsFile",
 		"onCommand:docker-wingman.deleteDockerEnv"
 	],
 	"main": "./src/extension.js",
@@ -43,10 +42,6 @@
 			{
 				"command": "docker-wingman.runDockerfile",
 				"title": "Docker Wingman: Activate Docker Environment from Dockerfile"
-			},
-			{
-				"command": "docker-wingman.writeRequirementsFile",
-				"title": "Docker Wingman: Write a requirements Dockerfile from the active Docker Environment"
 			},
 			{
 				"command": "docker-wingman.deleteDockerEnv",

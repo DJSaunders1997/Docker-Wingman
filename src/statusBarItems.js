@@ -55,11 +55,6 @@ var activateEnvIcon = new CustomStatusBarItem(
   (tooltip = "Activate docker environment referenced in open Dockerfile"),
   (command = "docker-wingman.runDockerfile")
 );
-var writeEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(book) Write Requirements File"),
-  (tooltip = "Write active docker environment to a Dockerfile"),
-  (command = "docker-wingman.writeRequirementsFile")
-);
 //create custom status bar item to delete env
 var deleteEnvIcon = new CustomStatusBarItem(
   (defaultText = "$(trashcan) Delete Env from Dockerfile"),

@@ -45,21 +45,39 @@ class CustomStatusBarItem {
 // Use CustomStatusBarItem class to create status bar items
 // Export the object instances and not the class
 // Create custom status bar items
-var createEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(tools) Build Image from Dockerfile"),
-  (tooltip = "Build docker environment from open Dockerfile"),
-  (command = "docker-wingman.buildDockerfile")
+const createEnvIcon = new CustomStatusBarItem(
+  "$(tools) Build Image from Dockerfile",
+  "Build docker environment from open Dockerfile",
+  "docker-wingman.buildDockerfile"
 );
-var activateEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(symbol-event) Run Docker Image"),
-  (tooltip = "Activate docker environment referenced in open Dockerfile"),
-  (command = "docker-wingman.runDockerfile")
+const activateEnvIcon = new CustomStatusBarItem(
+  "$(symbol-event) Run Docker Image",
+  "Activate docker environment referenced in open Dockerfile",
+  "docker-wingman.runDockerfile"
 );
 //create custom status bar item to delete env
-var deleteEnvIcon = new CustomStatusBarItem(
-  (defaultText = "$(trashcan) Delete Env from Dockerfile"),
-  (tooltip = "Delete docker environment referenced in open Dockerfile"),
-  (command = "docker-wingman.deleteDockerEnv")
+const deleteEnvIcon = new CustomStatusBarItem(
+  "$(trashcan) Delete Env from Dockerfile",
+  "Delete docker environment referenced in open Dockerfile",
+  "docker-wingman.deleteDockerEnv"
 );
 
-module.exports = { createEnvIcon, activateEnvIcon, writeEnvIcon, deleteEnvIcon };
+// All items that participate in show/hide grouping
+const allItems = [createEnvIcon, activateEnvIcon, deleteEnvIcon];
+
+function showAllStatusBarItems() {
+  for (const item of allItems) {
+    item.displayDefault();
+  }
+}
+
+function hideAllStatusBarItems() {
+  for (const item of allItems) {
+    item.statusBar.hide();
+  }
+}
+
+module.exports = {
+  createEnvIcon, activateEnvIcon, deleteEnvIcon,
+  showAllStatusBarItems, hideAllStatusBarItems,
+};

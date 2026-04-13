@@ -1,25 +1,21 @@
 const vscode = require("vscode");
-var path = require("path");
+const path = require("path");
 
 const {
-  sendCommandToTerminal,
-  activeFileIsDockerfile,
   getOpenDocumentPath,
   buildImageFromDockerfile,
   runContainerFromImage,
   stopAndRemoveContainer,
-  createDockerfileInputBox,
 } = require("./utils");
 const {
-  createEnvIcon,
   activateEnvIcon,
-  writeEnvIcon,
   deleteEnvIcon,
 } = require("./statusBarItems"); // TODO: Make these arguments to the functions
 
 // TODO: Rename to build docker image
 function buildDockerfile() {
   const dockerfilePath = getOpenDocumentPath();
+  if (!dockerfilePath) { return; }
 
   // if (activeFileIsDockerfile()) {
   if (dockerfilePath.toLowerCase().includes("dockerfile")) {
@@ -56,6 +52,7 @@ function buildDockerfile() {
 
 function runDockerfile() {
   const dockerfilePath = getOpenDocumentPath();
+  if (!dockerfilePath) { return; }
 
   if (dockerfilePath.toLowerCase().includes("dockerfile")) {
     vscode.window.showInformationMessage(
@@ -110,6 +107,7 @@ function runDockerfile() {
 
 function deleteDockerContainer() {
   const dockerfilePath = getOpenDocumentPath();
+  if (!dockerfilePath) { return; }
 
   // Extract the repository name from the Dockerfile path
   const repoName = path.basename(path.dirname(dockerfilePath));
@@ -127,30 +125,8 @@ function deleteDockerContainer() {
       }
     });
 }
-// Command: "Docker Wingman: Create a Dockerfile"
-// This command will create a Dockerfile with a name input from the user.
-async function createDockerfile() {
-  // Use current filename as default value if possible.
-  var filepath = vscode.window.activeTextEditor.document.fileName;
-  var filename = path.parse(filepath).base;
-
-  if (
-    filepath == "undefined" ||
-    !filename.toLowerCase().includes("dockerfile")
-  ) {
-    filename = "Dockerfile";
-  }
-
-  // Get response from user as to what to call their Dockerfile.
-  var response = await createDockerfileInputBox(filename);
-  console.log("Response: ", response);
-
-  writeEnvIcon.displayDefault();
-}
-
 module.exports = {
   buildDockerfile,
   runDockerfile,
-  createDockerfile,
   deleteDockerContainer,
 };
